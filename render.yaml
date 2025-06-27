@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: mern-social-backend
+    env: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: MONGODB_URI
+        fromDatabase:
+          name: mern-social-db
+          property: connectionString
+    autoDeploy: false
+
+databases:
+  - name: mern-social-db
+    databaseName: mern_social
+    user: mern_user
+    plan: free
