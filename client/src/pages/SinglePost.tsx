@@ -20,7 +20,8 @@ import {
   Spinner,
   Center,
   Divider,
-  Image
+  Image,
+  useColorModeValue
 } from '@chakra-ui/react';
 import { FaComment } from 'react-icons/fa';
 
@@ -52,6 +53,12 @@ function SinglePost(props: RouteComponentProps<MatchParams>) {
   const commentInputRef = useRef<HTMLInputElement>(null);
 
   const [comment, setComment] = useState('');
+
+  const cardBg = useColorModeValue('white', 'gray.800');
+  const cardBorder = useColorModeValue('gray.200', 'gray.700');
+  const bodyTextColor = useColorModeValue('gray.800', 'gray.100');
+  const subTextColor = useColorModeValue('gray.500', 'gray.400');
+  const commentCardBg = useColorModeValue('gray.50', 'gray.750');
 
   const {
     data: { getPost } = {}
@@ -102,14 +109,21 @@ function SinglePost(props: RouteComponentProps<MatchParams>) {
 
   return (
     <Box maxW="container.md" mx="auto" py={4}>
-      <Card borderRadius="lg" boxShadow="md" mb={6}>
+      <Card
+        bg={cardBg}
+        border="1px solid"
+        borderColor={cardBorder}
+        borderRadius="lg"
+        boxShadow="md"
+        mb={6}
+      >
         <CardHeader pb={2}>
           <Flex align="center" justify="space-between">
             <Flex gap={3} align="center">
               <Avatar name={username} src={avatarUrl} size="md" bg="teal.500" />
               <Box>
                 <Heading size="md">{username}</Heading>
-                <Text fontSize="sm" color="gray.500">
+                <Text fontSize="sm" color={subTextColor}>
                   {moment(createdAt).fromNow()}
                 </Text>
               </Box>
@@ -122,7 +136,7 @@ function SinglePost(props: RouteComponentProps<MatchParams>) {
 
         <CardBody py={3}>
           {textWithoutUrl && (
-            <Text fontSize="lg" color="gray.800" mb={imageUrl ? 4 : 0}>
+            <Text fontSize="lg" color={bodyTextColor} mb={imageUrl ? 4 : 0}>
               {textWithoutUrl}
             </Text>
           )}
@@ -139,7 +153,7 @@ function SinglePost(props: RouteComponentProps<MatchParams>) {
           )}
         </CardBody>
 
-        <Divider color="gray.200" />
+        <Divider borderColor={cardBorder} />
 
         <CardFooter pt={3}>
           <HStack spacing={4}>
@@ -159,9 +173,9 @@ function SinglePost(props: RouteComponentProps<MatchParams>) {
       </Card>
 
       {user && (
-        <Card borderRadius="lg" boxShadow="sm" mb={6}>
+        <Card bg={cardBg} border="1px solid" borderColor={cardBorder} borderRadius="lg" boxShadow="sm" mb={6}>
           <CardBody>
-            <Text fontWeight="semibold" mb={3} color="teal.700">
+            <Text fontWeight="semibold" mb={3} color="teal.500">
               Post a comment
             </Text>
             <form
@@ -196,17 +210,17 @@ function SinglePost(props: RouteComponentProps<MatchParams>) {
         {comments.map((comment) => {
           const commentAvatarUrl = `https://api.dicebear.com/7.x/identicon/svg?seed=${encodeURIComponent(comment.username)}`;
           return (
-            <Card key={comment.id} borderRadius="md" boxShadow="xs" bg="gray.50">
+            <Card key={comment.id} bg={commentCardBg} border="1px solid" borderColor={cardBorder} borderRadius="md" boxShadow="xs">
               <CardBody py={3}>
                 <Flex align="center" justify="space-between">
                   <Flex gap={3} align="flex-start">
                     <Avatar name={comment.username} src={commentAvatarUrl} size="sm" />
                     <Box>
                       <Heading size="xs">{comment.username}</Heading>
-                      <Text fontSize="xs" color="gray.500" mb={1}>
+                      <Text fontSize="xs" color={subTextColor} mb={1}>
                         {moment(comment.createdAt).fromNow()}
                       </Text>
-                      <Text fontSize="sm">{comment.body}</Text>
+                      <Text fontSize="sm" color={bodyTextColor}>{comment.body}</Text>
                     </Box>
                   </Flex>
                   {user && user.username === comment.username && (
