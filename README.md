@@ -20,7 +20,6 @@
 
 ## Set up on local server
 ```bash
-git clone git@bitbucket.org:xdmd/web.git
 cd web
 npm install
 npm run dev
