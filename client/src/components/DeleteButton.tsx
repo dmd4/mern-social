@@ -1,7 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import gql from 'graphql-tag';
 import { useMutation } from '@apollo/client';
-import { Button, Confirm, Icon } from 'semantic-ui-react';
+import {
+  IconButton,
+  AlertDialog,
+  AlertDialogBody,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogContent,
+  AlertDialogOverlay,
+  Button
+} from '@chakra-ui/react';
+import { FaTrash } from 'react-icons/fa';
 
 import { FETCH_POSTS_QUERY } from '../util/graphql';
 import MyPopup from '../util/MyPopup';
@@ -14,7 +24,9 @@ interface DeleteButtonProps {
 
 function DeleteButton({ postId, commentId, callback }: DeleteButtonProps) {
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const cancelRef = useRef<HTMLButtonElement>(null);
   const mutation = commentId ? DELETE_COMMENT_MUTATION : DELETE_POST_MUTATION;
+
   const [deletePostOrMutation] = useMutation(mutation, {
     update(proxy) {
       setConfirmOpen(false);
@@ -42,20 +54,42 @@ function DeleteButton({ postId, commentId, callback }: DeleteButtonProps) {
   return (
     <>
       <MyPopup content={commentId ? 'Delete comment' : 'Delete post'}>
-        <Button
-          as="div"
-          color="red"
-          floated="right"
+        <IconButton
+          aria-label="Delete"
+          icon={<FaTrash />}
+          colorScheme="red"
+          variant="ghost"
+          size="sm"
           onClick={() => setConfirmOpen(true)}
-        >
-          <Icon name="trash" style={{ margin: 0 }} />
-        </Button>
+        />
       </MyPopup>
-      <Confirm
-        open={confirmOpen}
-        onCancel={() => setConfirmOpen(false)}
-        onConfirm={deletePostOrMutation as any}
-      />
+
+      <AlertDialog
+        isOpen={confirmOpen}
+        leastDestructiveRef={cancelRef as any}
+        onClose={() => setConfirmOpen(false)}
+      >
+        <AlertDialogOverlay>
+          <AlertDialogContent>
+            <AlertDialogHeader fontSize="lg" fontWeight="bold">
+              Confirm Delete
+            </AlertDialogHeader>
+
+            <AlertDialogBody>
+              Are you sure you want to delete this {commentId ? 'comment' : 'post'}?
+            </AlertDialogBody>
+
+            <AlertDialogFooter>
+              <Button ref={cancelRef} onClick={() => setConfirmOpen(false)}>
+                Cancel
+              </Button>
+              <Button colorScheme="red" onClick={deletePostOrMutation as any} ml={3}>
+                Delete
+              </Button>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialogOverlay>
+      </AlertDialog>
     </>
   );
 }

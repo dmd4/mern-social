@@ -7,7 +7,8 @@
     "dev": "tsx watch index.ts",
     "build": "tsc",
     "postinstall": "tsc",
-    "start": "node dist/index.js"
+    "start": "node dist/index.js",
+    "test": "tsx --test util/*.test.ts"
   },
   "repository": {
     "type": "git",

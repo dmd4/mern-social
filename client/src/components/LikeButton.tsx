@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useMutation } from '@apollo/client';
 import gql from 'graphql-tag';
-import { Button, Label, Icon } from 'semantic-ui-react';
+import { Button, Text } from '@chakra-ui/react';
+import { FaHeart, FaRegHeart } from 'react-icons/fa';
 
 import MyPopup from '../util/MyPopup';
 import { User, Like } from '../types';
@@ -30,28 +31,32 @@ function LikeButton({ user, post: { id, likeCount, likes } }: LikeButtonProps) {
   });
 
   const likeButton = user ? (
-    liked ? (
-      <Button color="teal">
-        <Icon name="heart" />
-      </Button>
-    ) : (
-      <Button color="teal" basic>
-        <Icon name="heart" />
-      </Button>
-    )
+    <Button
+      colorScheme="teal"
+      variant={liked ? 'solid' : 'outline'}
+      leftIcon={liked ? <FaHeart /> : <FaRegHeart />}
+      onClick={likePost as any}
+      size="sm"
+    >
+      <Text ml={1}>{likeCount}</Text>
+    </Button>
   ) : (
-    <Button as={Link} to="/login" color="teal" basic>
-      <Icon name="heart" />
+    <Button
+      as={Link}
+      to="/login"
+      colorScheme="teal"
+      variant="outline"
+      leftIcon={<FaRegHeart />}
+      size="sm"
+    >
+      <Text ml={1}>{likeCount}</Text>
     </Button>
   );
 
   return (
-    <Button as="div" labelPosition="right" onClick={likePost as any}>
-      <MyPopup content={liked ? 'Unlike' : 'Like'}>{likeButton}</MyPopup>
-      <Label basic color="teal" pointing="left">
-        {likeCount}
-      </Label>
-    </Button>
+    <MyPopup content={liked ? 'Unlike' : 'Like'}>
+      {likeButton}
+    </MyPopup>
   );
 }
 

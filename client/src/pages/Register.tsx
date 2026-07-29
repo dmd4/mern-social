@@ -1,5 +1,17 @@
 import React, { useContext, useState } from 'react';
-import { Button, Form } from 'semantic-ui-react';
+import {
+  Button,
+  FormControl,
+  FormLabel,
+  Input,
+  VStack,
+  Heading,
+  Alert,
+  AlertIcon,
+  Card,
+  CardBody,
+  Container
+} from '@chakra-ui/react';
 import { useMutation } from '@apollo/client';
 import gql from 'graphql-tag';
 import { RouteComponentProps } from 'react-router-dom';
@@ -47,59 +59,82 @@ function Register(props: RouteComponentProps) {
   }
 
   return (
-    <div className="form-container">
-      <Form onSubmit={onSubmit} noValidate className={loading ? 'loading' : ''}>
-        <h1>Register</h1>
-        <Form.Input
-          label="Username"
-          placeholder="Username.."
-          name="username"
-          type="text"
-          value={values.username}
-          error={errors.username ? true : false}
-          onChange={onChange}
-        />
-        <Form.Input
-          label="Email"
-          placeholder="Email.."
-          name="email"
-          type="email"
-          value={values.email}
-          error={errors.email ? true : false}
-          onChange={onChange}
-        />
-        <Form.Input
-          label="Password"
-          placeholder="Password.."
-          name="password"
-          type="password"
-          value={values.password}
-          error={errors.password ? true : false}
-          onChange={onChange}
-        />
-        <Form.Input
-          label="Confirm Password"
-          placeholder="Confirm Password.."
-          name="confirmPassword"
-          type="password"
-          value={values.confirmPassword}
-          error={errors.confirmPassword ? true : false}
-          onChange={onChange}
-        />
-        <Button type="submit" primary>
-          Register
-        </Button>
-      </Form>
-      {Object.keys(errors).length > 0 && (
-        <div className="ui error message">
-          <ul className="list">
-            {Object.values(errors).map((value) => (
-              <li key={value}>{value}</li>
-            ))}
-          </ul>
-        </div>
-      )}
-    </div>
+    <Container maxW="md" py={8}>
+      <Card shadow="md" borderRadius="lg">
+        <CardBody>
+          <Heading size="lg" mb={6} textAlign="center" color="teal.600">
+            Register
+          </Heading>
+          <form onSubmit={onSubmit} noValidate>
+            <VStack spacing={4}>
+              <FormControl isInvalid={!!errors.username}>
+                <FormLabel>Username</FormLabel>
+                <Input
+                  placeholder="Username.."
+                  name="username"
+                  type="text"
+                  value={values.username}
+                  onChange={onChange}
+                  focusBorderColor="teal.400"
+                />
+              </FormControl>
+              <FormControl isInvalid={!!errors.email}>
+                <FormLabel>Email</FormLabel>
+                <Input
+                  placeholder="Email.."
+                  name="email"
+                  type="email"
+                  value={values.email}
+                  onChange={onChange}
+                  focusBorderColor="teal.400"
+                />
+              </FormControl>
+              <FormControl isInvalid={!!errors.password}>
+                <FormLabel>Password</FormLabel>
+                <Input
+                  placeholder="Password.."
+                  name="password"
+                  type="password"
+                  value={values.password}
+                  onChange={onChange}
+                  focusBorderColor="teal.400"
+                />
+              </FormControl>
+              <FormControl isInvalid={!!errors.confirmPassword}>
+                <FormLabel>Confirm Password</FormLabel>
+                <Input
+                  placeholder="Confirm Password.."
+                  name="confirmPassword"
+                  type="password"
+                  value={values.confirmPassword}
+                  onChange={onChange}
+                  focusBorderColor="teal.400"
+                />
+              </FormControl>
+              <Button
+                type="submit"
+                colorScheme="teal"
+                width="full"
+                isLoading={loading}
+                mt={2}
+              >
+                Register
+              </Button>
+            </VStack>
+          </form>
+          {Object.keys(errors).length > 0 && (
+            <VStack mt={4} align="stretch" spacing={2}>
+              {Object.values(errors).map((value) => (
+                <Alert status="error" borderRadius="md" key={value}>
+                  <AlertIcon />
+                  {value}
+                </Alert>
+              ))}
+            </VStack>
+          )}
+        </CardBody>
+      </Card>
+    </Container>
   );
 }
 

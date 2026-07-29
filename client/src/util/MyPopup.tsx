@@ -1,5 +1,5 @@
-import { Popup } from 'semantic-ui-react';
 import React, { ReactNode } from 'react';
+import { Tooltip } from '@chakra-ui/react';
 
 interface MyPopupProps {
   content: string;
@@ -7,7 +7,11 @@ interface MyPopupProps {
 }
 
 function MyPopup({ content, children }: MyPopupProps) {
-  return <Popup inverted content={content} trigger={children as any} />;
+  return (
+    <Tooltip label={content} hasArrow placement="top">
+      {children as any}
+    </Tooltip>
+  );
 }
 
 export default MyPopup;
