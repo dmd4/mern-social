@@ -17,13 +17,11 @@ const server = new ApolloServer({
   resolvers,
   context: ({ req }: { req: any }) => ({ req, pubsub }),
   cors: {
-    origin: process.env.NODE_ENV === 'production' 
-      ? ['https://your-frontend-app.onrender.com', 'https://social-media-dmd.netlify.app']
-      : ['http://localhost:3000'],
+    origin: true,
     credentials: true
   },
-  introspection: process.env.NODE_ENV !== 'production',
-  playground: process.env.NODE_ENV !== 'production'
+  introspection: true,
+  playground: true
 });
 
 mongoose
