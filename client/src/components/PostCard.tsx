@@ -76,7 +76,7 @@ function PostCard({
               to={`/posts/${id}`}
               colorScheme="blue"
               variant="outline"
-              leftIcon={<FaComment />}
+              leftIcon={React.createElement(FaComment as any)}
               size="sm"
             >
               <Text ml={1}>{commentCount}</Text>

@@ -39,7 +39,7 @@ function MenuBar() {
       <HStack spacing={3}>
         <IconButton
           aria-label="Toggle Color Mode"
-          icon={colorMode === 'light' ? <FaMoon /> : <FaSun />}
+          icon={React.createElement((colorMode === 'light' ? FaMoon : FaSun) as any)}
           onClick={toggleColorMode}
           variant="ghost"
           colorScheme="teal"

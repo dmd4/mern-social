@@ -56,7 +56,7 @@ function DeleteButton({ postId, commentId, callback }: DeleteButtonProps) {
       <MyPopup content={commentId ? 'Delete comment' : 'Delete post'}>
         <IconButton
           aria-label="Delete"
-          icon={<FaTrash />}
+          icon={React.createElement(FaTrash as any)}
           colorScheme="red"
           variant="ghost"
           size="sm"

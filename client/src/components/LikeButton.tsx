@@ -34,7 +34,7 @@ function LikeButton({ user, post: { id, likeCount, likes } }: LikeButtonProps) {
     <Button
       colorScheme="teal"
       variant={liked ? 'solid' : 'outline'}
-      leftIcon={liked ? <FaHeart /> : <FaRegHeart />}
+      leftIcon={React.createElement((liked ? FaHeart : FaRegHeart) as any)}
       onClick={likePost as any}
       size="sm"
     >
@@ -46,7 +46,7 @@ function LikeButton({ user, post: { id, likeCount, likes } }: LikeButtonProps) {
       to="/login"
       colorScheme="teal"
       variant="outline"
-      leftIcon={<FaRegHeart />}
+      leftIcon={React.createElement(FaRegHeart as any)}
       size="sm"
     >
       <Text ml={1}>{likeCount}</Text>
