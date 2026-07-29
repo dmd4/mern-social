@@ -7,10 +7,15 @@ import { AuthContext } from '../context/auth';
 import LikeButton from './LikeButton';
 import DeleteButton from './DeleteButton';
 import MyPopup from '../util/MyPopup';
+import { Post } from '../types';
+
+interface PostCardProps {
+  post: Post;
+}
 
 function PostCard({
   post: { body, createdAt, id, username, likeCount, commentCount, likes }
-}) {
+}: PostCardProps) {
   const { user } = useContext(AuthContext);
 
   return (

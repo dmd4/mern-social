@@ -14,11 +14,17 @@ function PostForm() {
   const [createPost, { error }] = useMutation(CREATE_POST_MUTATION, {
     variables: values,
     update(proxy, result) {
-      const data = proxy.readQuery({
+      const data: any = proxy.readQuery({
         query: FETCH_POSTS_QUERY
       });
-      data.getPosts = [result.data.createPost, ...data.getPosts];
-      proxy.writeQuery({ query: FETCH_POSTS_QUERY, data });
+      if (data && data.getPosts) {
+        proxy.writeQuery({
+          query: FETCH_POSTS_QUERY,
+          data: {
+            getPosts: [result.data.createPost, ...data.getPosts]
+          }
+        });
+      }
       values.body = '';
     }
   });
@@ -47,7 +53,12 @@ function PostForm() {
       {error && (
         <div className="ui error message" style={{ marginBottom: 20 }}>
           <ul className="list">
-            <li>{error.graphQLErrors[0].message}</li>
+            <li>
+              {(error.graphQLErrors &&
+                error.graphQLErrors[0] &&
+                error.graphQLErrors[0].message) ||
+                error.message}
+            </li>
           </ul>
         </div>
       )}

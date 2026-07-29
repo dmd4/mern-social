@@ -1,19 +1,19 @@
-const { AuthenticationError, UserInputError } = require('apollo-server');
+import { AuthenticationError, UserInputError } from 'apollo-server';
 
-const Post = require('../../models/Post');
-const checkAuth = require('../../util/check-auth');
+import Post from '../../models/Post';
+import checkAuth from '../../util/check-auth';
 
-module.exports = {
+export const postsResolvers = {
   Query: {
     async getPosts() {
       try {
         const posts = await Post.find().sort({ createdAt: -1 });
         return posts;
-      } catch (err) {
+      } catch (err: any) {
         throw new Error(err);
       }
     },
-    async getPost(_, { postId }) {
+    async getPost(_: any, { postId }: { postId: string }) {
       try {
         const post = await Post.findById(postId);
         if (post) {
@@ -21,13 +21,13 @@ module.exports = {
         } else {
           throw new Error('Post not found');
         }
-      } catch (err) {
+      } catch (err: any) {
         throw new Error(err);
       }
     }
   },
   Mutation: {
-    async createPost(_, { body }, context) {
+    async createPost(_: any, { body }: { body: string }, context: any) {
       const user = checkAuth(context);
 
       if (body.trim() === '') {
@@ -49,35 +49,39 @@ module.exports = {
 
       return post;
     },
-    async deletePost(_, { postId }, context) {
+    async deletePost(_: any, { postId }: { postId: string }, context: any) {
       const user = checkAuth(context);
 
       try {
         const post = await Post.findById(postId);
-        if (user.username === post.username) {
-          await post.delete();
-          return 'Successfully delete post';
+        if (post) {
+          if (user.username === post.username) {
+            await post.deleteOne();
+            return 'Successfully delete post';
+          } else {
+            throw new AuthenticationError('Action not allowed');
+          }
         } else {
-          throw new AuthenticationError('Action not allowed');
+          throw new Error('Post not found');
         }
-      } catch (err) {
+      } catch (err: any) {
         throw new Error(err);
       }
     },
-    async likePost(_, { postId }, context) {
+    async likePost(_: any, { postId }: { postId: string }, context: any) {
       const { username } = checkAuth(context);
 
       const post = await Post.findById(postId);
       if (post) {
         if (post.likes.find((like) => like.username === username)) {
-          // Post already likes, unlike it
-          post.likes = post.likes.filter((like) => like.username !== username);
+          // Post already liked, unlike it
+          post.likes = post.likes.filter((like) => like.username !== username) as any;
         } else {
           // Not liked, like post
           post.likes.push({
             username,
             createdAt: new Date().toISOString()
-          });
+          } as any);
         }
 
         await post.save();
@@ -87,7 +91,9 @@ module.exports = {
   },
   Subscription: {
     newPost: {
-      subscribe: (_, __, { pubsub }) => pubsub.asyncIterator('NEW_POST')
+      subscribe: (_: any, __: any, { pubsub }: any) => pubsub.asyncIterator('NEW_POST')
     }
   }
 };
+
+export default postsResolvers;

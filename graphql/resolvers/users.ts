@@ -1,18 +1,18 @@
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-const { UserInputError } = require('apollo-server');
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
+import { UserInputError } from 'apollo-server';
 
-const {
+import {
   validateRegisterInput,
   validateLoginInput
-} = require('../../util/validators');
-const { SECRET_KEY } = require('../../config');
-const User = require('../../models/User');
+} from '../../util/validators';
+import { SECRET_KEY } from '../../config';
+import User, { IUser } from '../../models/User';
 
-function generateToken(user) {
+function generateToken(user: { id?: any; _id?: any; email: string; username: string }) {
   return jwt.sign(
     {
-      id: user.id,
+      id: user.id || user._id,
       email: user.email,
       username: user.username
     },
@@ -21,9 +21,9 @@ function generateToken(user) {
   );
 }
 
-module.exports = {
+export const usersResolvers = {
   Mutation: {
-    async login(_, { username, password }) {
+    async login(_: any, { username, password }: any) {
       const { errors, valid } = validateLoginInput(username, password);
 
       if (!valid) {
@@ -37,7 +37,7 @@ module.exports = {
         throw new UserInputError('Wrong crendetials', { errors });
       }
 
-      const match = await bcrypt.compare(password, user.password);
+      const match = await bcrypt.compare(password, user.password || '');
       if (!match) {
         errors.general = 'Wrong crendetials';
         throw new UserInputError('Wrong crendetials', { errors });
@@ -46,18 +46,17 @@ module.exports = {
       const token = generateToken(user);
 
       return {
-        ...user._doc,
+        ...(user as any)._doc,
         id: user._id,
         token
       };
     },
     async register(
-      _,
+      _: any,
       {
         registerInput: { username, email, password, confirmPassword }
-      }
+      }: any
     ) {
-      // Validate user data
       const { valid, errors } = validateRegisterInput(
         username,
         email,
@@ -67,7 +66,6 @@ module.exports = {
       if (!valid) {
         throw new UserInputError('Errors', { errors });
       }
-      // TODO: Make sure user doesnt already exist
       const user = await User.findOne({ username });
       if (user) {
         throw new UserInputError('Unavailable username', {
@@ -76,13 +74,13 @@ module.exports = {
           }
         });
       }
-      // hash password and create an auth token
-      password = await bcrypt.hash(password, 12);
+
+      const hashedPassword = await bcrypt.hash(password, 12);
 
       const newUser = new User({
         email,
         username,
-        password,
+        password: hashedPassword,
         createdAt: new Date().toISOString()
       });
 
@@ -91,10 +89,12 @@ module.exports = {
       const token = generateToken(res);
 
       return {
-        ...res._doc,
+        ...(res as any)._doc,
         id: res._id,
         token
       };
     }
   }
 };
+
+export default usersResolvers;

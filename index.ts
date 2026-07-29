@@ -1,10 +1,12 @@
-const { ApolloServer, PubSub } = require('apollo-server');
-const mongoose = require('mongoose');
-require('dotenv').config();
+import { ApolloServer, PubSub } from 'apollo-server';
+import mongoose from 'mongoose';
+import dotenv from 'dotenv';
 
-const typeDefs = require('./graphql/typeDefs');
-const resolvers = require('./graphql/resolvers');
-const { MONGODB } = require('./config');
+dotenv.config();
+
+import typeDefs from './graphql/typeDefs';
+import resolvers from './graphql/resolvers';
+import { MONGODB } from './config';
 
 const pubsub = new PubSub();
 
@@ -13,24 +15,19 @@ const PORT = process.env.PORT || 5000;
 const server = new ApolloServer({
   typeDefs,
   resolvers,
-  context: ({ req }) => ({ req, pubsub }),
-  // CORS configuration for Render
+  context: ({ req }: { req: any }) => ({ req, pubsub }),
   cors: {
     origin: process.env.NODE_ENV === 'production' 
       ? ['https://your-frontend-app.onrender.com', 'https://social-media-dmd.netlify.app']
       : ['http://localhost:3000'],
     credentials: true
   },
-  // Security settings
   introspection: process.env.NODE_ENV !== 'production',
   playground: process.env.NODE_ENV !== 'production'
 });
 
 mongoose
-  .connect(MONGODB, { 
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-  })
+  .connect(MONGODB)
   .then(() => {
     console.log('MongoDB Connected');
     return server.listen({ port: PORT });

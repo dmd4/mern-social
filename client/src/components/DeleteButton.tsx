@@ -6,18 +6,30 @@ import { Button, Confirm, Icon } from 'semantic-ui-react';
 import { FETCH_POSTS_QUERY } from '../util/graphql';
 import MyPopup from '../util/MyPopup';
 
-function DeleteButton({ postId, commentId, callback }) {
+interface DeleteButtonProps {
+  postId: string;
+  commentId?: string;
+  callback?: () => void;
+}
+
+function DeleteButton({ postId, commentId, callback }: DeleteButtonProps) {
   const [confirmOpen, setConfirmOpen] = useState(false);
   const mutation = commentId ? DELETE_COMMENT_MUTATION : DELETE_POST_MUTATION;
   const [deletePostOrMutation] = useMutation(mutation, {
     update(proxy) {
       setConfirmOpen(false);
       if (!commentId) {
-        const data = proxy.readQuery({
+        const data: any = proxy.readQuery({
           query: FETCH_POSTS_QUERY
         });
-        data.getPosts = data.getPosts.filter((p) => p.id !== postId);
-        proxy.writeQuery({ query: FETCH_POSTS_QUERY, data });
+        if (data && data.getPosts) {
+          proxy.writeQuery({
+            query: FETCH_POSTS_QUERY,
+            data: {
+              getPosts: data.getPosts.filter((p: any) => p.id !== postId)
+            }
+          });
+        }
       }
       if (callback) callback();
     },
@@ -26,6 +38,7 @@ function DeleteButton({ postId, commentId, callback }) {
       commentId
     }
   });
+
   return (
     <>
       <MyPopup content={commentId ? 'Delete comment' : 'Delete post'}>
@@ -41,7 +54,7 @@ function DeleteButton({ postId, commentId, callback }) {
       <Confirm
         open={confirmOpen}
         onCancel={() => setConfirmOpen(false)}
-        onConfirm={deletePostOrMutation}
+        onConfirm={deletePostOrMutation as any}
       />
     </>
   );

@@ -2,6 +2,7 @@ import React, { useContext, useState, useRef } from 'react';
 import gql from 'graphql-tag';
 import { useQuery, useMutation } from '@apollo/client';
 import moment from 'moment';
+import { RouteComponentProps } from 'react-router-dom';
 import {
   Button,
   Card,
@@ -16,17 +17,22 @@ import { AuthContext } from '../context/auth';
 import LikeButton from '../components/LikeButton';
 import DeleteButton from '../components/DeleteButton';
 import MyPopup from '../util/MyPopup';
+import { Post } from '../types';
 
-function SinglePost(props) {
+interface MatchParams {
+  postId: string;
+}
+
+function SinglePost(props: RouteComponentProps<MatchParams>) {
   const postId = props.match.params.postId;
   const { user } = useContext(AuthContext);
-  const commentInputRef = useRef(null);
+  const commentInputRef = useRef<HTMLInputElement>(null);
 
   const [comment, setComment] = useState('');
 
   const {
     data: { getPost } = {}
-  } = useQuery(FETCH_POST_QUERY, {
+  } = useQuery<{ getPost: Post }>(FETCH_POST_QUERY, {
     variables: {
       postId
     }
@@ -35,7 +41,9 @@ function SinglePost(props) {
   const [submitComment] = useMutation(SUBMIT_COMMENT_MUTATION, {
     update() {
       setComment('');
-      commentInputRef.current.blur();
+      if (commentInputRef.current) {
+        commentInputRef.current.blur();
+      }
     },
     variables: {
       postId,
@@ -119,7 +127,7 @@ function SinglePost(props) {
                         type="submit"
                         className="ui button teal"
                         disabled={comment.trim() === ''}
-                        onClick={submitComment}
+                        onClick={submitComment as any}
                       >
                         Submit
                       </button>

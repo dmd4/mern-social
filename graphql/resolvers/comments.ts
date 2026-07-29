@@ -1,11 +1,11 @@
-const { AuthenticationError, UserInputError } = require('apollo-server');
+import { AuthenticationError, UserInputError } from 'apollo-server';
 
-const checkAuth = require('../../util/check-auth');
-const Post = require('../../models/Post');
+import checkAuth from '../../util/check-auth';
+import Post from '../../models/Post';
 
-module.exports = {
+export const commentsResolvers = {
   Mutation: {
-    createComment: async (_, { postId, body }, context) => {
+    createComment: async (_: any, { postId, body }: { postId: string; body: string }, context: any) => {
       const { username } = checkAuth(context);
       if (body.trim() === '') {
         throw new UserInputError('Empty comment', {
@@ -20,20 +20,20 @@ module.exports = {
           body,
           username,
           createdAt: new Date().toISOString()
-        });
+        } as any);
         await post.save();
         return post;
       } else throw new UserInputError('Post not found');
     },
-    async deleteComment(_, { postId, commentId }, context) {
+    async deleteComment(_: any, { postId, commentId }: { postId: string; commentId: string }, context: any) {
       const { username } = checkAuth(context);
 
       const post = await Post.findById(postId);
 
       if (post) {
-        const commentIndex = post.comments.findIndex((c) => c.id === commentId);
+        const commentIndex = post.comments.findIndex((c: any) => c.id === commentId || c._id?.toString() === commentId);
 
-        if (post.comments[commentIndex].username === username) {
+        if (commentIndex !== -1 && post.comments[commentIndex].username === username) {
           post.comments.splice(commentIndex, 1);
           await post.save();
           return post;
@@ -46,3 +46,5 @@ module.exports = {
     }
   }
 };
+
+export default commentsResolvers;

@@ -12,9 +12,9 @@
 - To be developed: Follow and Unfollow; Private/public posts; Profile customization; Post picture, audio; Direct Messaging; Share; Save post; Report post/user; Two-factor authenticator; etc.  
 
 ## Tech stack
-- React
-- Node.js
-- GraphQL 
+- TypeScript / React
+- Node.js / Express
+- GraphQL / Apollo Server & Client
 - MongoDB for database
 - Render + Netlify + Git for cloud deployment
 
@@ -22,13 +22,15 @@
 ```bash
 git clone git@bitbucket.org:xdmd/web.git
 cd web
-npm start
+npm install
+npm run dev
 ```
 If you have all the required packages (node, MongoDB, etc.), the server now starts at http://localhost:5000  
 
 Next, open a new terminal to start client
 ```bash
 cd web/client
+npm install
 npm start
 ```
 The website is at http://localhost:3000  
@@ -68,7 +70,7 @@ REACT_APP_GRAPHQL_URI=https://your-render-backend-url.onrender.com
 1. Create a new Web Service on [Render](https://render.com)
 2. Connect your GitHub repository
 3. Use these settings:
-   - **Build Command**: `npm install`
+   - **Build Command**: `npm install && npm run build`
    - **Start Command**: `npm start`
    - **Environment**: Node
 4. Add environment variables:

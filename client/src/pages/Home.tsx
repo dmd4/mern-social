@@ -6,13 +6,14 @@ import { AuthContext } from '../context/auth';
 import PostCard from '../components/PostCard';
 import PostForm from '../components/PostForm';
 import { FETCH_POSTS_QUERY } from '../util/graphql';
+import { Post } from '../types';
 
 function Home() {
   const { user } = useContext(AuthContext);
   const {
     loading,
     data: { getPosts: posts } = {}
-  } = useQuery(FETCH_POSTS_QUERY);
+  } = useQuery<{ getPosts: Post[] }>(FETCH_POSTS_QUERY);
 
   return (
     <Grid columns={3}>

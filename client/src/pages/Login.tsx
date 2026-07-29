@@ -2,13 +2,14 @@ import React, { useContext, useState } from 'react';
 import { Button, Form } from 'semantic-ui-react';
 import { useMutation } from '@apollo/client';
 import gql from 'graphql-tag';
+import { RouteComponentProps } from 'react-router-dom';
 
 import { AuthContext } from '../context/auth';
 import { useForm } from '../util/hooks';
 
-function Login(props) {
+function Login(props: RouteComponentProps) {
   const context = useContext(AuthContext);
-  const [errors, setErrors] = useState({});
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   const { onChange, onSubmit, values } = useForm(loginUserCallback, {
     username: '',
@@ -26,7 +27,15 @@ function Login(props) {
       props.history.push('/');
     },
     onError(err) {
-      setErrors(err.graphQLErrors[0].extensions.exception.errors);
+      const graphQLErrors = err.graphQLErrors;
+      if (graphQLErrors && graphQLErrors.length > 0) {
+        const ext = graphQLErrors[0].extensions as any;
+        if (ext && ext.exception && ext.exception.errors) {
+          setErrors(ext.exception.errors);
+          return;
+        }
+      }
+      setErrors({ general: err.message });
     },
     variables: values
   });

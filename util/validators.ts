@@ -1,10 +1,24 @@
-module.exports.validateRegisterInput = (
-  username,
-  email,
-  password,
-  confirmPassword
-) => {
-  const errors = {};
+export interface ValidationErrors {
+  username?: string;
+  email?: string;
+  password?: string;
+  confirmPassword?: string;
+  general?: string;
+  [key: string]: string | undefined;
+}
+
+export interface ValidationResult {
+  errors: ValidationErrors;
+  valid: boolean;
+}
+
+export const validateRegisterInput = (
+  username: string,
+  email: string,
+  password: string,
+  confirmPassword: string
+): ValidationResult => {
+  const errors: ValidationErrors = {};
   if (username.trim() === '') {
     errors.username = 'Username must not be empty';
   }
@@ -12,7 +26,6 @@ module.exports.validateRegisterInput = (
     errors.email = 'Invalid email address';
   } else {
     const regEx = /^([0-9a-zA-Z]([-.\w]*[0-9a-zA-Z])*@([0-9a-zA-Z][-\w]*[0-9a-zA-Z]\.)+[a-zA-Z]{2,9})$/;
-    // check if string contains valid character
     if (!email.match(regEx)) {
       errors.email = 'Invalid email address';
     }
@@ -29,8 +42,11 @@ module.exports.validateRegisterInput = (
   };
 };
 
-module.exports.validateLoginInput = (username, password) => {
-  const errors = {};
+export const validateLoginInput = (
+  username: string,
+  password: string
+): ValidationResult => {
+  const errors: ValidationErrors = {};
   if (username.trim() === '') {
     errors.username = 'Username must not be empty';
   }
