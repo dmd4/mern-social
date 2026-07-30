@@ -27,13 +27,25 @@ export const postsResolvers = {
     },
     async searchPosts(_: any, { searchTerm }: { searchTerm: string }) {
       try {
-        if (!searchTerm || searchTerm.trim() === '') {
+        const term = searchTerm ? searchTerm.trim() : '';
+        if (!term) {
           return await Post.find().sort({ createdAt: -1 });
         }
-        const posts = await Post.find(
-          { $text: { $search: searchTerm } },
+
+        // 1. Try full-text inverted index search first
+        let posts = await Post.find(
+          { $text: { $search: term } },
           { score: { $meta: 'textScore' } }
         ).sort({ score: { $meta: 'textScore' } });
+
+        // 2. Fallback to case-insensitive partial substring match if inverted index returns 0 results
+        if (posts.length === 0) {
+          const regex = new RegExp(term, 'i');
+          posts = await Post.find({
+            $or: [{ body: regex }, { username: regex }]
+          }).sort({ createdAt: -1 });
+        }
+
         return posts;
       } catch (err: any) {
         throw new Error(err);

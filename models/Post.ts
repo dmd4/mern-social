@@ -48,6 +48,10 @@ const postSchema = new Schema<IPost>({
 });
 
 // Create full-text inverted index on body and username fields
-postSchema.index({ body: 'text', username: 'text' });
+// Disable stop-word filtering (default_language: 'none') so short words like "it", "is", "the" are indexed
+postSchema.index(
+  { body: 'text', username: 'text' },
+  { default_language: 'none' }
+);
 
 export default model<IPost>('Post', postSchema);
