@@ -52,10 +52,14 @@ function PostCard({
       <CardHeader pb={2}>
         <Flex align="center" justify="space-between">
           <Flex flex="1" gap="3" alignItems="center">
-            <Avatar name={username} src={avatarUrl} size="sm" bg="teal.500" />
+            <Link to={`/users/${username}`}>
+              <Avatar name={username} src={avatarUrl} size="sm" bg="teal.500" cursor="pointer" />
+            </Link>
             <Box>
-              <Heading size="sm">{username}</Heading>
-              <Text fontSize="xs" color={timeTextColor} as={Link} to={`/posts/${id}`}>
+              <Heading size="sm" as={Link} to={`/users/${username}`} _hover={{ textDecoration: 'underline', color: 'teal.500' }}>
+                {username}
+              </Heading>
+              <Text fontSize="xs" color={timeTextColor} as={Link} to={`/posts/${id}`} display="block">
                 {moment(createdAt).fromNow(true)} ago
               </Text>
             </Box>
