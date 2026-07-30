@@ -24,6 +24,20 @@ export const postsResolvers = {
       } catch (err: any) {
         throw new Error(err);
       }
+    },
+    async searchPosts(_: any, { searchTerm }: { searchTerm: string }) {
+      try {
+        if (!searchTerm || searchTerm.trim() === '') {
+          return await Post.find().sort({ createdAt: -1 });
+        }
+        const posts = await Post.find(
+          { $text: { $search: searchTerm } },
+          { score: { $meta: 'textScore' } }
+        ).sort({ score: { $meta: 'textScore' } });
+        return posts;
+      } catch (err: any) {
+        throw new Error(err);
+      }
     }
   },
   Mutation: {

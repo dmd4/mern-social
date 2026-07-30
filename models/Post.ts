@@ -47,4 +47,7 @@ const postSchema = new Schema<IPost>({
   }
 });
 
+// Create full-text inverted index on body and username fields
+postSchema.index({ body: 'text', username: 'text' });
+
 export default model<IPost>('Post', postSchema);

@@ -38,6 +38,7 @@ const typeDefs = gql`
   type Query {
     getPosts: [Post]
     getPost(postId: ID!): Post
+    searchPosts(searchTerm: String!): [Post]
   }
   type Mutation {
     register(registerInput: RegisterInput): User!
